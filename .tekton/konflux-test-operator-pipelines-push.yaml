@@ -406,7 +406,7 @@ spec:
               env:
                 - name: COMMIT_SHA
                   value: $(params.COMMIT_SHA)
-              image: quay.io/konflux-ci/buildah:latest@sha256:7d7658b12457107d171f3c1644850e22a22513668484c5e971e6a773542461db
+              image: quay.io/konflux-ci/buildah:latest@sha256:aeaf4c45d9156bcae6e6e065d7e49072bde3a29ec5b937fbc080f3d8ea8a80bb
               name: build
               script: |
                 if [ -n "${PARAM_BUILDER_IMAGE}" ]; then
@@ -713,7 +713,7 @@ spec:
                 runAsUser: 0
               workingDir: $(workspaces.source.path)
             - computeResources: {}
-              image: quay.io/konflux-ci/buildah:latest@sha256:7d7658b12457107d171f3c1644850e22a22513668484c5e971e6a773542461db
+              image: quay.io/konflux-ci/buildah:latest@sha256:aeaf4c45d9156bcae6e6e065d7e49072bde3a29ec5b937fbc080f3d8ea8a80bb
               name: inject-sbom-and-push
               script: |
                 if [ -n "${PARAM_BUILDER_IMAGE}" ]; then
