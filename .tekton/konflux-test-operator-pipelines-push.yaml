@@ -292,6 +292,81 @@ spec:
             operator: in
             values:
               - "false"
+      - name: sast-coverity-check
+        params:
+        - name: IMAGE
+          value: $(params.output-image)
+        - name: DOCKERFILE
+          value: $(params.dockerfile)
+        - name: CONTEXT
+          value: $(params.path-context)
+        - name: HERMETIC
+          value: $(params.hermetic)
+        - name: PREFETCH_INPUT
+          value: $(params.prefetch-input)
+        - name: IMAGE_EXPIRES_AFTER
+          value: $(params.image-expires-after)
+        - name: COMMIT_SHA
+          value: $(tasks.clone-repository.results.commit)
+        - name: BUILD_ARGS
+          value:
+          - $(params.build-args[*])
+        - name: BUILD_ARGS_FILE
+          value: $(params.build-args-file)
+        - name: IMAGE_URL
+          value: $(tasks.build-container.results.IMAGE_URL)
+        - name: IMP_FINDINGS_ONLY
+          value: "true"
+        runAfter:
+          - coverity-availability-check
+        taskRef:
+          params:
+          - name: name
+            value: buildah
+          - name: bundle
+            value: quay.io/konflux-ci/tekton-catalog/task-buildah:0.2@sha256:67963bcd91b23ee90f2c4ecb8b7f523c457f6c350df17bc192480dbd085a241d
+          - name: kind
+            value: task
+          resolver: bundles
+        taskRef:
+          params:
+          - name: name
+            value: sast-coverity-check
+          - name: bundle
+            value: quay.io/kdudka/sast-coverity-check:latest
+          - name: kind
+            value: task
+          resolver: bundles
+        when:
+          - input: $(params.skip-checks)
+            operator: in
+            values: ["false"]
+          - input: $(tasks.coverity-availability-check.results.STATUS)
+            operator: in
+            values: ["success"]
+        workspaces:
+        - name: source
+          workspace: workspace
+      - name: coverity-availability-check
+        when:
+          - input: $(params.skip-checks)
+            operator: in
+            values: ["false"]
+        runAfter:
+          #- clone-repository
+          - build-container
+        taskRef:
+          params:
+          - name: name
+            value: coverity-availability-check
+          - name: bundle
+            value: quay.io/kdudka/coverity-availability-check:latest
+          - name: kind
+            value: task
+          resolver: bundles
+        workspaces:
+        - name: workspace
+          workspace: workspace
       - name: clair-scan
         params:
           - name: image-digest
@@ -306,26 +381,6 @@ spec:
               value: clair-scan
             - name: bundle
               value: quay.io/konflux-ci/tekton-catalog/task-clair-scan:0.2@sha256:0a5421111e7092740398691d5bd7c125cc0896f29531d19414bb5724ae41692a
-            - name: kind
-              value: task
-          resolver: bundles
-        when:
-          - input: $(params.skip-checks)
-            operator: in
-            values:
-              - "false"
-      - name: ecosystem-cert-preflight-checks
-        params:
-          - name: image-url
-            value: $(tasks.build-container.results.IMAGE_URL)
-        runAfter:
-          - build-container
-        taskRef:
-          params:
-            - name: name
-              value: ecosystem-cert-preflight-checks
-            - name: bundle
-              value: quay.io/konflux-ci/tekton-catalog/task-ecosystem-cert-preflight-checks:0.1@sha256:a4dc853e50a31272d45aef8e8bdc7dac0f0f92212fc7bf8bab67ba5917c03405
             - name: kind
               value: task
           resolver: bundles
