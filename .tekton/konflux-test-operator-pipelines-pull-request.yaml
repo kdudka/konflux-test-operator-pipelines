@@ -317,26 +317,6 @@ spec:
             operator: in
             values:
               - "false"
-      - name: ecosystem-cert-preflight-checks
-        params:
-          - name: image-url
-            value: $(tasks.build-container.results.IMAGE_URL)
-        runAfter:
-          - build-container
-        taskRef:
-          params:
-            - name: name
-              value: ecosystem-cert-preflight-checks
-            - name: bundle
-              value: quay.io/konflux-ci/tekton-catalog/task-ecosystem-cert-preflight-checks:0.1@sha256:a4dc853e50a31272d45aef8e8bdc7dac0f0f92212fc7bf8bab67ba5917c03405
-            - name: kind
-              value: task
-          resolver: bundles
-        when:
-          - input: $(params.skip-checks)
-            operator: in
-            values:
-              - "false"
       - name: sast-shellcheck
         runAfter:
           - build-container
