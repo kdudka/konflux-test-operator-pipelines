@@ -48,7 +48,7 @@ dependencies = [
     "humanize>=3.12.0",
     "stomp-py>=8.0.1",
     "requests-kerberos>=0.14.0",
-    "PyGithub<2.0,>=1.59.0",
+    "PyGithub<2.7,>=2.6.1",
     "GitPython>=3.1.37",
     "semver>=3.0.1",
     "operator-repo @ git+https://github.com/mporrato/operator-repo.git@v0.4.3",
