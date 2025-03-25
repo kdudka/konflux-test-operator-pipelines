@@ -472,15 +472,6 @@ spec:
         - name: kind
           value: task
         resolver: bundles
-      when:
-      - input: $(params.skip-checks)
-        operator: in
-        values:
-        - "false"
-      - input: $(tasks.sast-coverity-check-build.results.TEST_OUTPUT)
-        operator: in
-        values:
-        - success
       workspaces:
       - name: source
         workspace: workspace
@@ -502,15 +493,6 @@ spec:
         - name: kind
           value: task
         resolver: bundles
-      when:
-      - input: $(params.skip-checks)
-        operator: in
-        values:
-        - "false"
-      - input: $(tasks.sast-coverity-check.results.TEST_OUTPUT)
-        operator: in
-        values:
-        - success
       workspaces:
       - name: source
         workspace: workspace
