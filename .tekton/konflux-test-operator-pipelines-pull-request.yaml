@@ -419,10 +419,25 @@ spec:
         operator: in
         values:
         - "false"
-    - name: sast-coverity-check
+    - name: coverity-availability-check
+      runAfter:
+      - prefetch-dependencies
+      taskRef:
+        params:
+        - name: name
+          value: coverity-availability-check
+        - name: bundle
+          value: quay.io/kdudka/coverity-availability-check:latest
+        - name: kind
+          value: task
+        resolver: bundles
+      when:
+      - input: $(params.skip-checks)
+        operator: in
+        values:
+        - "false"
+    - name: sast-coverity-check-build
       params:
-      - name: image-url
-        value: $(tasks.build-image-index.results.IMAGE_URL)
       - name: IMAGE
         value: $(params.output-image)
       - name: DOCKERFILE
@@ -447,9 +462,9 @@ spec:
       taskRef:
         params:
         - name: name
-          value: sast-coverity-check
+          value: sast-coverity-check-build
         - name: bundle
-          value: quay.io/kdudka/sast-coverity-check:latest
+          value: quay.io/kdudka/sast-coverity-check-build:0.4
         - name: kind
           value: task
         resolver: bundles
@@ -465,15 +480,15 @@ spec:
       workspaces:
       - name: source
         workspace: workspace
-    - name: coverity-availability-check
+    - name: sast-coverity-check
       runAfter:
-      - build-image-index
+      - sast-coverity-check-build
       taskRef:
         params:
         - name: name
-          value: coverity-availability-check
+          value: sast-coverity-check
         - name: bundle
-          value: quay.io/kdudka/coverity-availability-check:latest
+          value: quay.io/kdudka/sast-coverity-check:0.4
         - name: kind
           value: task
         resolver: bundles
@@ -482,6 +497,13 @@ spec:
         operator: in
         values:
         - "false"
+      - input: $(tasks.coverity-availability-check.results.STATUS)
+        operator: in
+        values:
+        - success
+      workspaces:
+      - name: source
+        workspace: workspace
     - name: sast-shell-check
       params:
       - name: image-digest
