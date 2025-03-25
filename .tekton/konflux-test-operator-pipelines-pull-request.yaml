@@ -437,6 +437,10 @@ spec:
         - $(params.build-args[*])
       - name: BUILD_ARGS_FILE
         value: $(params.build-args-file)
+      - name: IMP_FINDINGS_ONLY
+        value: "false"
+      - name: COV_ANALYZE_ARGS
+        value: '--tu-pattern=!file("(/vendor/)|(/go/pkg/mod/)")'
       runAfter:
       - coverity-availability-check
       taskRef:
