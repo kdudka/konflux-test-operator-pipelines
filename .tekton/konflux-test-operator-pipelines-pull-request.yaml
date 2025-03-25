@@ -477,7 +477,37 @@ spec:
         operator: in
         values:
         - "false"
-      - input: $(tasks.coverity-availability-check.results.STATUS)
+      - input: $(tasks.sast-coverity-check-build.results.TEST_OUTPUT)
+        operator: in
+        values:
+        - success
+      workspaces:
+      - name: source
+        workspace: workspace
+    - name: sast-coverity-check-upload
+      runAfter:
+      - build-container
+      - sast-coverity-check
+      params:
+      - name: image-digest
+        value: $(tasks.build-image-index.results.IMAGE_DIGEST)
+      - name: image-url
+        value: $(tasks.build-image-index.results.IMAGE_URL)
+      taskRef:
+        params:
+        - name: name
+          value: sast-coverity-check-upload
+        - name: bundle
+          value: quay.io/kdudka/sast-coverity-check-upload:0.4
+        - name: kind
+          value: task
+        resolver: bundles
+      when:
+      - input: $(params.skip-checks)
+        operator: in
+        values:
+        - "false"
+      - input: $(tasks.sast-coverity-check.results.TEST_OUTPUT)
         operator: in
         values:
         - success
