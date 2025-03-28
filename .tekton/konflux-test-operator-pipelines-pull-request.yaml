@@ -464,6 +464,8 @@ spec:
       workspaces:
       - name: source
         workspace: workspace
+      - name: sast-results
+        workspace: sast-results
     - name: sast-coverity-check
       runAfter:
       - sast-coverity-check-build
@@ -479,6 +481,8 @@ spec:
       workspaces:
       - name: source
         workspace: workspace
+      - name: sast-results
+        workspace: sast-results
     - name: sast-coverity-check-upload
       runAfter:
       - build-container
@@ -498,8 +502,8 @@ spec:
           value: task
         resolver: bundles
       workspaces:
-      - name: source
-        workspace: workspace
+      - name: sast-results
+        workspace: sast-results
     - name: sast-shell-check
       params:
       - name: image-digest
@@ -618,6 +622,17 @@ spec:
   taskRunTemplate: {}
   workspaces:
   - name: workspace
+    volumeClaimTemplate:
+      metadata:
+        creationTimestamp: null
+      spec:
+        accessModes:
+        - ReadWriteOnce
+        resources:
+          requests:
+            storage: 1Gi
+      status: {}
+  - name: sast-results
     volumeClaimTemplate:
       metadata:
         creationTimestamp: null
